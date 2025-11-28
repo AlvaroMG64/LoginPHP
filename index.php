@@ -1,5 +1,5 @@
 <?php
-    session_start();
+    session_start(); // Pendiente de hacer segura
 ?>
 
 <!DOCTYPE html>
@@ -48,5 +48,6 @@
             </div>
         </div>
     </div>
+    <script src="validaciones.js"></script>
 </body>
 </html>
