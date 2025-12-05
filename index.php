@@ -33,13 +33,13 @@
                         <!-- Nombre de usuario -->
                         <div class="mb-3">
                             <label for="indentificador" class="form-label">Nombre de usuario</label>
-                            <input type="text" name="usuario" class="form-control form-control-lg" placeholder="" required>
+                            <input type="text" name="identificador" id="identificador" class="form-control form-control-lg" placeholder="" required>
                             <div id="identificadorHelp" class="form-text">Requerido y con caracteres válidos</div>
                         </div>
                         <!-- Contraseña -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" name="clave" class="form-control form-control-lg" placeholder="" required>
+                            <input type="password" name="password" id="password" class="form-control form-control-lg" placeholder="" required>
                             <div id="passwordHelp" class="form-text">Debe tener mayúsculas, minúsculas, dígitos y caracteres especiales</div>
                         </div>
                         <button class="btn btn-primary btn-lg mt-2">Acceder</button>

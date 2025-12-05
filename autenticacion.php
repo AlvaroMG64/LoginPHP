@@ -26,18 +26,28 @@
         // Redireccionar a index si no está o la constraseña es errónea
         // Redireccionar a inicio.php si todo es correcto
 
-        $querySQL = "SELECT * FROM usuarios WHERE idusuario = `$usuario`";
+        $querySQL = "SELECT * FROM usuarios WHERE idusuario = '". $usuario . "'";
         $resultado = $mysqli -> query($querySQL);
 
         if ($resultado -> num_rows == 0) { // Usuario inexistente
             $_SESSION['error'] = "Usuario incorrecto";
             header('Location: ./index.php');
         } else { // Usuario encontrado
-            // Comprobar si la password coincide
-            // Si no, mensaje de error y redireccionar a index.php
-            // Si sí, redireccionar a inicio.php
-            $_SESSION['error'] = 'Usuario reconocido';
-            header('Location: ./index.php');
+            $row = mysqli_fetch_object($resultado); // Trata la fila como un objeto
+            // Ahora hay que ver si la password introducida coincide
+            // El objeto $row es de la clase stdClass
+            if ($row->password == $password) {
+                // Cojo todos los datos de este usuario y los paso como
+                // Variables de sesión
+                $_SESSION['nombre'] =  $row->nombre;
+                $_SESSION['apellidos'] =  $row->apellidos;
+                header("Location: ./inicio.php");
+            } else {
+                $_SESSION['error'] = "Contraseña incorrecta";
+                header("Location: ./index.php");
+            }
+            //  Libera la conexión con la base de datos
+            $mysqli->close();
         }
 
     } else {
