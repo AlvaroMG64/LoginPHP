@@ -1,5 +1,5 @@
 <?php
-    session_start(); // Pendiente de hacer segura
+    include 'establecer-sesion-php';
 ?>
 
 <!DOCTYPE html>

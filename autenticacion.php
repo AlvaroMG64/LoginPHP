@@ -1,8 +1,8 @@
 <?php
-    session_start(); // Pendiente de hacer segura
+    include 'establecer-sesion-php';
 
-    if (isset($_POST['identificador'])) {
-
+    if (isset($_POST['identificador'])) { // Comprobación insegura
+        // **** Habría que comprobar CSRF Token para dejar pasar a la aplicación
         // Inicialización de parámetros de conexión
         $host = 'localhost';
         $usuario = 'root';      // Inseguro

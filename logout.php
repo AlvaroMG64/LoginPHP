@@ -1,6 +1,8 @@
 <?php
-    session_start();
+    include 'establecer-sesion-php';
     $_SESSION = [];
     session_destroy();
-    header("Location:./index.php")
+    // ***** Habría que destruir explícitamente la cookie
+    // De sesión y otras cookies potencialmente peligrosas
+    header("Location:./index.php");
 ?>
