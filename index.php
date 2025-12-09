@@ -1,5 +1,5 @@
 <?php
-    include 'establecer-sesion-php';
+    include 'establecer-sesion.php';
 ?>
 
 <!DOCTYPE html>
@@ -30,6 +30,9 @@
                             }
                         ?>
 
+                        <!-- Token CSRF -->
+                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
                         <!-- Nombre de usuario -->
                         <div class="mb-3">
                             <label for="indentificador" class="form-label">Nombre de usuario</label>
@@ -40,7 +43,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña</label>
                             <input type="password" name="password" id="password" class="form-control form-control-lg" placeholder="" required>
-                            <div id="passwordHelp" class="form-text">Debe tener mayúsculas, minúsculas, dígitos y caracteres especiales</div>
+                            <div id="passwordHelp" class="form-text">Debe tener mayúsculas, minúsculas, dígitos y caracteres especiales (!@#$%&*?-)</div>
                         </div>
                         <button class="btn btn-primary btn-lg mt-2">Acceder</button>
                     </form>

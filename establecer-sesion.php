@@ -2,19 +2,19 @@
     session_set_cookie_params([
         'lifetime' => 3600,                     // esto limita el tiempo de las cookies (opcional)
         'path' => '/',                          // indica desde que directorio está habilitada. Así, toda la web
-        // 'domain' => 'tu-dominio.com',           // indica desde que dominio se puede acceder a ella únicamente
-        // 'secure' => isset($_SERVER['HTTPS']),   //*** solo acceso vía https (para el despliegue, no en desarrollos)
+        // 'domain' => 'tu-dominio.com',        // indica desde que dominio se puede acceder a ella únicamente
+        // 'secure' => isset($_SERVER['HTTPS']), //*** solo acceso vía https (para el despliegue, no en desarrollos)
         'httponly' => true,                     //*** para que no sea accesible desde JavaScript, solo desde PHP
         'samesite' => 'Strict',                 // evita ataques CSRF. Otros valores son Lax o none (ver más abajo)
     ]);
     session_start();
 
-    // Define el intervalo en segundos (por ejemplo, 1200 segundos = 20 minutos)
-    $regenerate_interval = 1200;
+    // Define el intervalo en segundos para regenerar ID de sesión
+    $regenerate_interval = 1200; // 20 minutos
 
     // Almacena el tiempo de la última regeneración si no existe
     if (!isset($_SESSION['last_regeneration'])) {
-    $_SESSION['last_regeneration'] = time();
+        $_SESSION['last_regeneration'] = time();
     }
 
     // Verifica y regenera si es necesario
@@ -24,9 +24,20 @@
         // Actualiza el timestamp para el próximo intervalo
         $_SESSION['last_regeneration'] = time();
     }
-    // Generamos por primera vez un token que garantiza
-    // Haber ingresado correctamente
-    // Impide la suplantación
+
+    // Tiempo máximo de sesión (2 horas)
+    $limite_sesion = 7200;
+    if (!isset($_SESSION['inicio_sesion'])) {
+        $_SESSION['inicio_sesion'] = time();
+    }
+    if (time() - $_SESSION['inicio_sesion'] > $limite_sesion) {
+        $_SESSION = [];
+        session_destroy();
+        header("Location: index.php");
+        exit;
+    }
+
+    // Generamos por primera vez un token CSRF
     if (empty($_SESSION['csrf_token'])) {
         // Creación de un CSRF Token
         // Genera un string aleatorio de 64 bytes
@@ -35,7 +46,11 @@
 
         // Resguardo del CSRF Token en una sesión
         // Es extremadamente difícil simularlo o suplantarlo
-        // Por ahora
         $_SESSION['csrf_token'] = $csrf_token;
+    }
+
+    // Inicializamos contador de intentos de login
+    if (!isset($_SESSION['intentos'])) {
+        $_SESSION['intentos'] = 0;
     }
 ?>

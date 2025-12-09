@@ -1,8 +1,20 @@
 <?php
-    include 'establecer-sesion-php';
+    include 'establecer-sesion.php';
+
     $_SESSION = [];
+
+    // Destruye cookie de sesión
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
     session_destroy();
-    // ***** Habría que destruir explícitamente la cookie
-    // De sesión y otras cookies potencialmente peligrosas
     header("Location:./index.php");
+    exit;
 ?>
