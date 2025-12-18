@@ -2,17 +2,9 @@
 
 ## 📌 Descripción
 
-**LoginPHP** es un sistema de autenticación y registro de usuarios desarrollado en **PHP** utilizando **PDO** y siguiendo el patrón **Modelo–Vista–Controlador (MVC)**.
+**LoginPHP** es un sistema de autenticación y registro de usuarios desarrollado en **PHP** utilizando **PDO**, siguiendo una separación clara entre vistas y controladores, con fines **didácticos**.
 
-El proyecto incluye medidas de seguridad habituales en aplicaciones web:
-
-- Validaciones en frontend y backend  
-- Protección CSRF mediante tokens  
-- Cookies de sesión seguras  
-- Control de intentos de acceso  
-- Registro de usuarios con aprobación por administrador  
-
-Está pensado como **proyecto didáctico**, incorporando buenas prácticas de seguridad y una estructura clara.
+El proyecto incorpora medidas de seguridad habituales en aplicaciones web modernas, manteniendo una estructura sencilla y comprensible.
 
 ---
 
@@ -25,67 +17,74 @@ Está pensado como **proyecto didáctico**, incorporando buenas prácticas de se
 - **establecer-sesion.php** → Configuración y seguridad de sesiones  
 - **inicio.php** → Vista protegida tras login  
 - **logout.php** → Cierre de sesión seguro  
-- **admin.php** → Vista de gestión de usuarios pendientes (admin)  
-- **procesar-admin.php** → Controlador de aprobación/rechazo de usuarios  
-- **validaciones.js** → Validaciones frontend  
+- **admin.php** → Vista de gestión de usuarios pendientes  
+- **procesar-admin.php** → Controlador de aprobación/rechazo  
+- **validaciones.js** → Validaciones en frontend  
 - **usuarios.sql** → Script de base de datos  
-- **README.md** → Documentación del proyecto  
 
 ---
 
 ## 🗄️ Base de datos
 
-La base de datos contiene una tabla `usuarios` con los siguientes campos:
+La base de datos `login-php` contiene la tabla `usuarios` con los siguientes campos:
 
-- **coduser** → Identificador único del usuario (clave primaria)  
-- **idusuario** → Nombre de usuario (único)  
-- **password** → Contraseña del usuario (en producción usar hash seguro)  
-- **nombre, apellidos** → Datos personales del usuario  
-- **admitido** → Indica si el usuario está aprobado por el administrador  
+- **coduser**: identificador único del usuario (clave primaria).  
+- **idusuario**: nombre de usuario único.  
+- **password**: contraseña almacenada mediante hash seguro.  
+- **nombre** y **apellidos**: datos personales del usuario.  
+- **admitido**: indica si el usuario está aprobado por el administrador.
 
-**Reglas de estado:**  
-- Usuarios existentes: admitidos = TRUE  
-- Nuevos registros: admitidos = FALSE (pendientes de aprobación)  
+**Reglas de estado:**
+- Usuarios existentes → `admitido = TRUE`  
+- Nuevos registros → `admitido = FALSE` (pendientes de aprobación)
 
 ---
 
-## ⚙️ Funcionalidades
+## ⚙️ Funcionalidades implementadas
 
-1. **Validación front-end**  
-   - Comprobaciones de usuario y contraseña mediante JavaScript  
-   - Mensajes de error mostrados con alertas Bootstrap  
+### 1. Validación front-end
+- Implementada en `validaciones.js`.
+- Controla formato y longitud de usuario y contraseña.
+- Muestra errores mediante alertas Bootstrap.
 
-2. **Cookies de sesión seguras**  
-   - Configuración con `httponly`, `samesite=Strict` y `path=/`  
-   - Expiran automáticamente tras 1 hora  
+### 2. Cookies de sesión seguras
+- Configuradas en `establecer-sesion.php`.
+- Uso de `httponly`, `samesite=Strict` y `path=/`.
 
-3. **Token CSRF**  
-   - Generado al iniciar sesión  
-   - Incluido en formularios y comprobado en los controladores  
+### 3. Protección CSRF
+- Token generado al iniciar sesión.
+- Incluido en todos los formularios.
+- Verificado en los controladores.
 
-4. **Cierre de sesión seguro**  
-   - Destrucción completa de la sesión  
-   - Eliminación explícita de la cookie  
+### 4. Cierre de sesión seguro
+- Destrucción completa de la sesión.
+- Eliminación explícita de la cookie de sesión.
 
-5. **Parámetros php.ini**  
-   - Revisión de valores relacionados con sesiones y cookies  
+### 5. Parámetros de sesión
+- Revisión de parámetros relevantes en `php.ini`.
+- Aplicación práctica en la configuración del proyecto.
 
-6. **Regeneración de sesión**  
-   - ID de sesión regenerado cada 20 minutos  
-   - Límite máximo de sesión: 2 horas  
+### 6. Expiración de sesión
+- Cookies con duración limitada a 1 hora.
+- Caducidad automática por inactividad.
 
-7. **Control de intentos de acceso**  
-   - Limitado a 5 intentos por sesión  
-   - Bloqueo temporal tras superar el límite  
+### 7. Regeneración de sesión
+- Regeneración del ID cada 20 minutos.
+- Límite máximo de sesión de 2 horas.
 
-8. **Registro de usuario**  
-   - Validación de datos y comprobación de existencia  
-   - Inserción con estado pendiente de aprobación  
+### 8. Control de intentos de acceso
+- Máximo de 5 intentos por sesión.
+- Bloqueo temporal tras superar el límite.
 
-9. **Aprobación de usuarios por administrador**  
-   - Listado de usuarios pendientes  
-   - Opción de aprobar o rechazar  
-   - Acceso restringido hasta la aprobación  
+### 9. Registro de usuarios
+- Validación de datos.
+- Comprobación de usuario existente.
+- Inserción como pendiente de aprobación.
+
+### 10. Aprobación por administrador
+- Panel exclusivo para usuarios pendientes.
+- Opciones de aprobar o rechazar.
+- Acceso restringido hasta la aprobación.
 
 ---
 
