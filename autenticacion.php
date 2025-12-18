@@ -1,34 +1,14 @@
 <?php
 include 'establecer-sesion.php';
 
-// CSRF
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    $_SESSION['error'] = "Solicitud inválida";
+if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    $_SESSION['error'] = "CSRF inválido";
     header("Location: index.php");
     exit;
 }
 
 if ($_SESSION['intentos'] >= 5) {
-    $_SESSION['error'] = "Demasiados intentos. Espere unos minutos.";
-    header("Location: index.php");
-    exit;
-}
-
-$host = 'localhost';
-$db   = 'login-php';
-$user = 'loginapp';
-$pass = 'Abduzcan3E_';
-$charset = 'utf8mb4';
-
-try {
-    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
-} catch (PDOException $e) {
-    $_SESSION['error'] = "Error de conexión";
+    $_SESSION['error'] = "Demasiados intentos";
     header("Location: index.php");
     exit;
 }
@@ -36,34 +16,33 @@ try {
 $usuario = trim($_POST['identificador']);
 $password = $_POST['password'];
 
-$stmt = $pdo->prepare("SELECT * FROM usuarios WHERE idusuario = :u LIMIT 1");
-$stmt->execute(['u' => $usuario]);
-$row = $stmt->fetch();
+$pdo = new PDO(
+    "mysql:host=localhost;dbname=login-php;charset=utf8mb4",
+    "loginapp",
+    "Abduzcan3E_",
+    [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ]
+);
 
-if (!$row) {
-    $_SESSION['error'] = "Usuario incorrecto";
+$stmt = $pdo->prepare("SELECT * FROM usuarios WHERE idusuario = ?");
+$stmt->execute([$usuario]);
+$user = $stmt->fetch();
+
+if (!$user || !password_verify($password, $user->password)) {
+    $_SESSION['error'] = "Usuario o contraseña incorrectos";
     $_SESSION['intentos']++;
     header("Location: index.php");
     exit;
 }
 
-if (!password_verify($password, $row->password)) {
-    $_SESSION['error'] = "Contraseña incorrecta";
-    $_SESSION['intentos']++;
-    header("Location: index.php");
-    exit;
-}
-
-if (!$row->admitido) {
+if (!$user->admitido) {
     $_SESSION['error'] = "Cuenta pendiente de aprobación";
     header("Location: index.php");
     exit;
 }
 
-// LOGIN CORRECTO
-$_SESSION['idusuario'] = $row->idusuario;   // 🔴 CLAVE
-$_SESSION['nombre'] = $row->nombre;
-$_SESSION['apellidos'] = $row->apellidos;
+$_SESSION['identificador'] = $user->idusuario;
+$_SESSION['nombre'] = $user->nombre;
+$_SESSION['apellidos'] = $user->apellidos;
 $_SESSION['intentos'] = 0;
 
 header("Location: inicio.php");
