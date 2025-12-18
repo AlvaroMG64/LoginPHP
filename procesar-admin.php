@@ -8,13 +8,14 @@ if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_tok
     exit;
 }
 
-// Verificar administrador
+// Solo admin
 if (!isset($_SESSION['identificador']) || $_SESSION['identificador'] !== 'admin') {
     $_SESSION['error'] = "Acceso no autorizado";
     header("Location: index.php");
     exit;
 }
 
+// Comprobar parámetros
 if (!isset($_POST['coduser'], $_POST['accion'])) {
     $_SESSION['error'] = "Datos incompletos";
     header("Location: admin.php");
@@ -59,3 +60,4 @@ if ($accion === 'aprobar') {
 
 header("Location: admin.php");
 exit;
+?>
