@@ -1,49 +1,56 @@
 <?php
-include 'establecer-sesion.php';
+require 'establecer-sesion.php';
+require 'conexion.php'; // tu conexión PDO
 
-if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    $_SESSION['error'] = "CSRF inválido";
+// Comprobar CSRF
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    $_SESSION['error'] = "Token CSRF inválido";
     header("Location: index.php");
     exit;
 }
 
+// Comprobar límite de intentos
 if ($_SESSION['intentos'] >= 5) {
-    $_SESSION['error'] = "Demasiados intentos";
+    $_SESSION['error'] = "Demasiados intentos. Cierra el navegador y vuelve a intentarlo.";
     header("Location: index.php");
     exit;
 }
 
-$usuario = trim($_POST['identificador']);
-$password = $_POST['password'];
+// Recoger datos
+$idusuario = trim($_POST['idUser'] ?? '');
+$password  = $_POST['password'] ?? '';
 
-$pdo = new PDO(
-    "mysql:host=localhost;dbname=login-php;charset=utf8mb4",
-    "loginapp",
-    "Abduzcan3E_",
-    [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ]
-);
+if ($idusuario === '' || $password === '') {
+    $_SESSION['error'] = "Rellena todos los campos";
+    header("Location: index.php");
+    exit;
+}
 
-$stmt = $pdo->prepare("SELECT * FROM usuarios WHERE idusuario = ?");
-$stmt->execute([$usuario]);
-$user = $stmt->fetch();
+// Buscar usuario
+$sql = "SELECT * FROM usuarios WHERE idusuario = :idusuario AND admitido = 1";
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['idusuario' => $idusuario]);
+$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user || !password_verify($password, $user->password)) {
-    $_SESSION['error'] = "Usuario o contraseña incorrectos";
+// Verificar contraseña
+if ($usuario && password_verify($password, $usuario['password'])) {
+
+    // Login correcto → reiniciar intentos
+    $_SESSION['intentos'] = 0;
+
+    $_SESSION['idUser']    = $usuario['idusuario'];
+    $_SESSION['nombre']    = $usuario['nombre'];
+    $_SESSION['apellidos'] = $usuario['apellidos'];
+
+    header("Location: inicio.php");
+    exit;
+
+} else {
+
+    // Login incorrecto → sumar intento
     $_SESSION['intentos']++;
+
+    $_SESSION['error'] = "Usuario o contraseña incorrectos";
     header("Location: index.php");
     exit;
 }
-
-if (!$user->admitido) {
-    $_SESSION['error'] = "Cuenta pendiente de aprobación";
-    header("Location: index.php");
-    exit;
-}
-
-$_SESSION['identificador'] = $user->idusuario;
-$_SESSION['nombre'] = $user->nombre;
-$_SESSION['apellidos'] = $user->apellidos;
-$_SESSION['intentos'] = 0;
-
-header("Location: inicio.php");
-exit;
