@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -42,16 +42,15 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`idusuario`, `password`, `nombre`, `apellidos`, `admitido`) VALUES
-('admin', '$2y$10$Kk4Yc.3b5W7pRvn0bRswEOGd05y9Zx9hQYFZptnZ2v6R.HGZzGZSO', 'Administrador', 'Principal', 1),
-('Alvaro_MG64', '$2y$10$Q8Ue8iQwC3vbtN1m8bWJ9e2n.8f0KpJHf6wT2mN8dR5JkL7fTQWfa', 'ALVARO', 'MOZO GASPAR', 1),
-('Zazza_I5', '$2y$10$N3pF8bW8Qv1kL2rXh6sZ7eP9y8R5jT2v6xF9hL7cY1kM4qVbTz3O', 'FEDERICO', 'ZOMPICCHIATTI', 1);
+('Alvaro_MG64', 'Uruguasho3*', 'ALVARO', 'MOZO GASPAR', 1),
+('Zazza_I5', 'Abduzcan7#', 'FEDERICO', 'ZOMPICCHIATTI', 1);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 ALTER TABLE `usuarios`
-  MODIFY `coduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `coduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

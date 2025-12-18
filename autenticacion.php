@@ -1,56 +1,90 @@
 <?php
-require 'establecer-sesion.php';
-require 'conexion.php'; // tu conexión PDO
+    include 'establecer-sesion.php';
 
-// Comprobar CSRF
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    $_SESSION['error'] = "Token CSRF inválido";
-    header("Location: index.php");
-    exit;
-}
+    // Comprobación CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['error'] = "Solicitud inválida";
+        header("Location: index.php");
+        exit;
+    }
 
-// Comprobar límite de intentos
-if ($_SESSION['intentos'] >= 5) {
-    $_SESSION['error'] = "Demasiados intentos. Cierra el navegador y vuelve a intentarlo.";
-    header("Location: index.php");
-    exit;
-}
+    if (isset($_POST['identificador'])) {
 
-// Recoger datos
-$idusuario = trim($_POST['idUser'] ?? '');
-$password  = $_POST['password'] ?? '';
+        // Comprueba si hay demasiados intentos
+        if ($_SESSION['intentos'] >= 5) {
+            $_SESSION['error'] = "Demasiados intentos. Espere unos minutos.";
+            header("Location: index.php");
+            exit;
+        }
 
-if ($idusuario === '' || $password === '') {
-    $_SESSION['error'] = "Rellena todos los campos";
-    header("Location: index.php");
-    exit;
-}
+        // Parámetros de conexión
+        $host = 'localhost';
+        $db   = 'login-php';
+        $user = 'loginapp';
+        $pass = 'Abduzcan3E_';
+        $charset = 'utf8mb4';
 
-// Buscar usuario
-$sql = "SELECT * FROM usuarios WHERE idusuario = :idusuario AND admitido = 1";
-$stmt = $pdo->prepare($sql);
-$stmt->execute(['idusuario' => $idusuario]);
-$usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            // DSN de conexión PDO
+            $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-// Verificar contraseña
-if ($usuario && password_verify($password, $usuario['password'])) {
+            $pdo = new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ]);
 
-    // Login correcto → reiniciar intentos
-    $_SESSION['intentos'] = 0;
+        } catch (PDOException $e) {
+            $_SESSION['error'] = "No se puede comprobar usuario en estos momentos";
+            header("Location: index.php");
+            exit;
+        }
 
-    $_SESSION['idUser']    = $usuario['idusuario'];
-    $_SESSION['nombre']    = $usuario['nombre'];
-    $_SESSION['apellidos'] = $usuario['apellidos'];
+        // Limpieza básica de datos
+        $usuario = htmlspecialchars($_POST['identificador']);
+        $password = htmlspecialchars($_POST['password']);
 
-    header("Location: inicio.php");
-    exit;
+        // Consulta preparada (evita SQL Injection)
+        $sql = "SELECT * FROM usuarios WHERE idusuario = :usuario LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['usuario' => $usuario]);
 
-} else {
+        $row = $stmt->fetch();
 
-    // Login incorrecto → sumar intento
-    $_SESSION['intentos']++;
+        if (!$row) {
+            $_SESSION['error'] = "Usuario incorrecto";
+            $_SESSION['intentos']++;
+            header("Location: index.php");
+            exit;
+        }
 
-    $_SESSION['error'] = "Usuario o contraseña incorrectos";
-    header("Location: index.php");
-    exit;
-}
+        // Comprobación de password (sin hash por ahora)
+        if ($row->password === $password) {
+
+            if (isset($row->admitido) && !$row->admitido) {
+                $_SESSION['error'] = "Cuenta pendiente de aprobación por administrador.";
+                header("Location: index.php");
+                exit;
+            }
+
+            // Login correcto
+            $_SESSION['nombre'] = $row->nombre;
+            $_SESSION['apellidos'] = $row->apellidos;
+            $_SESSION['intentos'] = 0;
+
+            header("Location: inicio.php");
+            exit;
+
+        } else {
+            $_SESSION['error'] = "Contraseña incorrecta";
+            $_SESSION['intentos']++;
+            header("Location: index.php");
+            exit;
+        }
+
+    } else {
+        $_SESSION['error'] = "Debe hacer login para acceder";
+        header("Location: index.php");
+        exit;
+    }
+?>
