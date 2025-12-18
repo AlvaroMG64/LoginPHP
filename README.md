@@ -2,9 +2,9 @@
 
 ## 📌 Descripción
 
-**LoginPHP** es un sistema de autenticación y registro de usuarios desarrollado en **PHP** utilizando **PDO**, siguiendo una separación clara entre vistas y controladores, con fines **didácticos**.
+**LoginPHP** es un sistema de autenticación de usuarios desarrollado en **PHP** utilizando **PDO**, con separación clara entre vistas y controladores, diseñado con fines **didácticos**.
 
-El proyecto incorpora medidas de seguridad habituales en aplicaciones web modernas, manteniendo una estructura sencilla y comprensible.
+El proyecto incorpora medidas de seguridad habituales en aplicaciones web modernas, manteniendo una estructura sencilla y comprensible. Incluye validación de datos, protección de sesión y control de acceso, adaptado para que los usuarios existentes puedan iniciar sesión de manera segura.
 
 ---
 
@@ -12,13 +12,9 @@ El proyecto incorpora medidas de seguridad habituales en aplicaciones web modern
 
 - **index.php** → Vista de login  
 - **autenticacion.php** → Controlador de autenticación  
-- **registro.php** → Vista de registro de usuario  
-- **procesar-registro.php** → Controlador de registro  
 - **establecer-sesion.php** → Configuración y seguridad de sesiones  
 - **inicio.php** → Vista protegida tras login  
 - **logout.php** → Cierre de sesión seguro  
-- **admin.php** → Vista de gestión de usuarios pendientes  
-- **procesar-admin.php** → Controlador de aprobación/rechazo  
 - **validaciones.js** → Validaciones en frontend  
 - **usuarios.sql** → Script de base de datos  
 
@@ -30,13 +26,13 @@ La base de datos `login-php` contiene la tabla `usuarios` con los siguientes cam
 
 - **coduser**: identificador único del usuario (clave primaria).  
 - **idusuario**: nombre de usuario único.  
-- **password**: contraseña almacenada mediante hash seguro.  
+- **password**: contraseña almacenada en texto plano (solo para fines didácticos).  
 - **nombre** y **apellidos**: datos personales del usuario.  
-- **admitido**: indica si el usuario está aprobado por el administrador.
+- **admitido**: campo booleano (siempre 1 en este proyecto, usado como ejemplo para prácticas futuras).
 
-**Reglas de estado:**
-- Usuarios existentes → `admitido = TRUE`  
-- Nuevos registros → `admitido = FALSE` (pendientes de aprobación)
+**Usuarios existentes en la base de datos:**
+- `Alvaro_MG64`  
+- `Zazza_I5`  
 
 ---
 
@@ -45,7 +41,7 @@ La base de datos `login-php` contiene la tabla `usuarios` con los siguientes cam
 ### 1. Validación front-end
 - Implementada en `validaciones.js`.
 - Controla formato y longitud de usuario y contraseña.
-- Muestra errores mediante alertas Bootstrap.
+- Muestra errores mediante alertas visuales en los formularios.
 
 ### 2. Cookies de sesión seguras
 - Configuradas en `establecer-sesion.php`.
@@ -54,7 +50,7 @@ La base de datos `login-php` contiene la tabla `usuarios` con los siguientes cam
 ### 3. Protección CSRF
 - Token generado al iniciar sesión.
 - Incluido en todos los formularios.
-- Verificado en los controladores.
+- Verificado en los controladores de autenticación.
 
 ### 4. Cierre de sesión seguro
 - Destrucción completa de la sesión.
@@ -76,22 +72,12 @@ La base de datos `login-php` contiene la tabla `usuarios` con los siguientes cam
 - Máximo de 5 intentos por sesión.
 - Bloqueo temporal tras superar el límite.
 
-### 9. Registro de usuarios
-- Validación de datos.
-- Comprobación de usuario existente.
-- Inserción como pendiente de aprobación.
-
-### 10. Aprobación por administrador
-- Panel exclusivo para usuarios pendientes.
-- Opciones de aprobar o rechazar.
-- Acceso restringido hasta la aprobación.
-
 ---
 
 ## 🎨 Estilo visual
 
 - **Tipografía:** Poppins (Google Fonts)  
-- **Colores:** Azul oscuro (#1f2a44) y tarjetas (#2c3e70)  
+- **Colores:** Azul oscuro (#1f2a44) para fondo, tarjetas (#2c3e70) para formularios  
 - **Diseño:** Tarjetas centradas, formularios anchos, placeholders visibles  
 - **Framework:** Bootstrap 5.3.2  
 
@@ -101,6 +87,6 @@ La base de datos `login-php` contiene la tabla `usuarios` con los siguientes cam
 
 1. Clonar el repositorio  
 2. Importar `usuarios.sql` en MySQL  
-3. Configurar la conexión a la base de datos en los archivos de sesión y autenticación  
-4. Abrir `index.php` en el navegador para iniciar sesión o registrarse  
-5. Los usuarios nuevos deben ser aprobados por el administrador antes de acceder a la aplicación  
+3. Configurar la conexión a la base de datos en `establecer-sesion.php` y `autenticacion.php`  
+4. Abrir `index.php` en el navegador para iniciar sesión  
+5. Todos los usuarios existentes tienen acceso automáticamente; el campo `admitido` es solo de relleno.
