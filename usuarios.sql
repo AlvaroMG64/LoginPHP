@@ -45,7 +45,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`idusuario`, `password`, `nombre`, `apellidos`, `admitido`) VALUES
-('admin', '$2y$10$kU8fJpT8L1mN5xQ6Bz6yUeF3rFvD1h5kD7qH8oVxL3sM4rT2pJb6a', 'Administrador', 'Principal', 1),
+('admin', '$2y$10$V9VZT7wD2N/c1h5lB4Iq7OTVQk6YxHtUCzC3.4EKv9lX/.N3PR6g6', 'Administrador', 'Principal', 1),
 ('Alvaro_MG64', '$2y$10$0eXbN5eQ0PmlvWZqsi9mBuXKg5pFvMG6vPTM1XqKkNYMiM7s8gEB2', 'ALVARO', 'MOZO GASPAR', 1),
 ('Zazza_I5', '$2y$10$G1KfLJdP8JX1e5Q2kRrj8eHcD1sF6r5oF7uBzVwZf8gS6XvHq1/7K', 'FEDERICO', 'ZOMPICCHIATTI', 1);
 
